@@ -13,6 +13,7 @@ public partial class MainViewModel : ViewModel
     private readonly IServiceProvider services;
 
     [ObservableProperty] private ObservableCollection<TodoItemViewModel> items;
+    [ObservableProperty] private TodoItemViewModel selectedItem;
 
     public MainViewModel(ITodoItemRepository repository, IServiceProvider services)
     {
@@ -49,4 +50,21 @@ public partial class MainViewModel : ViewModel
     }
 
     private void ItemStatusChanged(object sender, EventArgs e) { }
+
+    partial void OnSelectedItemChanging(TodoItemViewModel value)
+    {
+        if (value is not null) return;
+        MainThread.BeginInvokeOnMainThread(async () => { await NavigateToItemAsync(value); });
+    }
+
+    private async Task NavigateToItemAsync(TodoItemViewModel item)
+    {
+        var itemView = services.GetRequiredService<ItemView>();
+        var vm = itemView.BindingContext as ItemViewModel;
+
+        vm.Item = item.Item;
+        itemView.Title = "Edit todo item";
+
+        await Navigation.PushAsync(itemView);
+    }
 }
