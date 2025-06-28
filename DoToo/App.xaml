@@ -1,7 +1,7 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:DoToo"
              x:Class="DoToo.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +9,10 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary>
+                <Color x:Key="CompletedColor"> #1C8859 </Color>
+                <Color x:Key="ActiveColor"> #D3D3D3 </Color>
+            </ResourceDictionary>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
