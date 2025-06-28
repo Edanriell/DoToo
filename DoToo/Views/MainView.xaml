@@ -24,9 +24,21 @@ AddItemAsyncCommand}" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Text="{Binding ShowAll,Converter={StaticResource
+        <Button Style="{DynamicResource FilterButton}"
+                Text="{Binding ShowAll,Converter={StaticResource
 filterTextConverter}, StringFormat='Filter: {0}'}"
-                Command="{Binding ToggleFilterAsyncCommand}" />
+                BackgroundColor="{DynamicResource ActiveColor}"
+                TextColor="Black"
+                Command="{Binding ToggleFilterAsyncCommand}">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding ShowAll}"
+                             Value="True">
+                    <Setter Property="BackgroundColor" Value="{DynamicResource
+CompletedColor}" />
+                    <Setter Property="TextColor" Value="White" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
         <ListView x:Name="ItemsListView" Grid.Row="1"
                   RowHeight="70" ItemsSource="{Binding Items}"
                   SelectedItem="{Binding SelectedItem}">
@@ -51,11 +63,12 @@ ToggleCompletedCommand}" />
                             <Label Grid.Column="1"
                                    Text="{Binding Item.Title}" FontSize="Medium" />
                             <Label Grid.Column="1" Grid.Row="1"
-                                   Text="{Binding Item.Due}" FontSize="Micro" />
+                                   Text="{Binding Item.Due, StringFormat='{0:MMMM d, yyyy}'}" />
                             <Label Grid.Column="1" Grid.Row="1"
                                    HorizontalTextAlignment="End" Text="Completed"
                                    IsVisible="{Binding Item.Completed}"
-                                   FontSize="Micro" />
+                                   FontSize="Micro"
+                                   TextColor="{StaticResource CompletedColor}" />
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

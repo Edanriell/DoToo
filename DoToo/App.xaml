@@ -5,6 +5,16 @@
              x:Class="DoToo.App">
     <Application.Resources>
         <ResourceDictionary>
+            <Style TargetType="NavigationPage">
+                <Setter Property="BarBackgroundColor" Value="#A25EBB" />
+                <Setter Property="BarTextColor" Value="#FFFFFF" />
+            </Style>
+            <Style x:Key="FilterButton" TargetType="Button">
+                <Setter Property="Margin" Value="15" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="BorderColor" Value="Silver" />
+                <Setter Property="TextColor" />
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
