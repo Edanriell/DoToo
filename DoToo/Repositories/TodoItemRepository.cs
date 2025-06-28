@@ -9,11 +9,26 @@ public class TodoItemRepository : ITodoItemRepository
     public event EventHandler<TodoItem> OnItemAdded;
     public event EventHandler<TodoItem> OnItemUpdated;
 
-    public async Task<List<TodoItem>> GetItemsAsync() { return null; }
+    public async Task<List<TodoItem>> GetItemsAsync()
+    {
+        await CreateConnectionAsync();
+        return await connection.Table<TodoItem>().ToListAsync();
+    }
 
-    public async Task AddItemAsync(TodoItem item) { }
+    public async Task AddItemAsync(TodoItem item)
+    {
+        await CreateConnectionAsync();
+        await connection.InsertAsync(item);
+        // We invoke the OnItemAdded event to notify any subscribers
+        OnItemAdded?.Invoke(this, item);
+    }
 
-    public async Task UpdateItemAsync(TodoItem item) { }
+    public async Task UpdateItemAsync(TodoItem item)
+    {
+        await CreateConnectionAsync();
+        await connection.UpdateAsync(item);
+        OnItemUpdated?.Invoke(this, item);
+    }
 
     public async Task AddOrUpdateAsync(TodoItem item)
     {
