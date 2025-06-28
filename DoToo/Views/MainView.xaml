@@ -2,10 +2,13 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:DoToo.ViewModels"
              x:Class="DoToo.Views.MainView"
+             x:DataType="viewModels:MainViewModel"
              Title="Do Too!">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" />
+        <ToolbarItem Text="Add" Command="{Binding
+AddItemAsyncCommand}" />
     </ContentPage.ToolbarItems>
     <Grid>
         <Grid.RowDefinitions>
