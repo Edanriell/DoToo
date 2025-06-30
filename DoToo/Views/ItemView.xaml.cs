@@ -1,13 +1,13 @@
-﻿using DoToo.ViewModels;
-
 namespace DoToo.Views;
+
+using DoToo.ViewModels;
 
 public partial class ItemView : ContentPage
 {
-    public ItemView(ItemViewModel viewmodel)
+	public ItemView(ItemViewModel viewModel)
     {
         InitializeComponent();
-        viewmodel.Navigation = Navigation;
-        BindingContext = viewmodel;
+        viewModel.Navigation = Navigation;
+        BindingContext = viewModel;
     }
 }

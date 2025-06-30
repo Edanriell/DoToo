@@ -19,7 +19,6 @@ public class TodoItemRepository : ITodoItemRepository
     {
         await CreateConnectionAsync();
         await connection.InsertAsync(item);
-        // We invoke the OnItemAdded event to notify any subscribers
         OnItemAdded?.Invoke(this, item);
     }
 
@@ -38,22 +37,30 @@ public class TodoItemRepository : ITodoItemRepository
             await UpdateItemAsync(item);
     }
 
+    public async Task DeleteItemAsync(TodoItem item)
+    {
+        await CreateConnectionAsync();
+        await connection.DeleteAsync(item);
+        OnItemDeleted?.Invoke(this, item);
+    }
+
+    public event EventHandler<TodoItem> OnItemDeleted;
+
     private async Task CreateConnectionAsync()
     {
         if (connection != null) return;
 
         var documentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
         var databasePath = Path.Combine(documentPath, "TodoItems.db");
 
         connection = new SQLiteAsyncConnection(databasePath);
         await connection.CreateTableAsync<TodoItem>();
 
-        if (await connection.Table<TodoItem>().CountAsync() == 0)
-            await connection.InsertAsync(new TodoItem
-            {
-                Title = "Welcome to DoToo",
-                Due = DateTime.Now
-            });
+        // if (await connection.Table<TodoItem>().CountAsync() == 0)
+        //     await connection.InsertAsync(new TodoItem
+        //     {
+        //         Title = "Welcome to DoToo",
+        //         Due = DateTime.Now
+        //     });
     }
 }

@@ -1,22 +1,203 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:DoToo.ViewModels"
              x:Class="DoToo.Views.ItemView"
              x:DataType="viewModels:ItemViewModel"
-             Title="New todo item">
+             Title="✏️ Edit Task"
+             BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#000000}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="InputCard" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}" />
+                <Setter Property="BorderColor" Value="Transparent" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="Margin" Value="20,10" />
+                <Setter Property="Padding" Value="20,16" />
+            </Style>
+
+            <!-- Entry -->
+            <Style x:Key="ModernEntry" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8F9FA, Dark=#2C2C2E}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}" />
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light=#6C757D, Dark=#8E8E93}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="Margin" Value="0,8,0,0" />
+            </Style>
+
+            <!-- DatePicker -->
+            <Style x:Key="ModernDatePicker" TargetType="DatePicker">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8F9FA, Dark=#2C2C2E}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="Margin" Value="0,8,0,0" />
+            </Style>
+
+            <!-- Field Label -->
+            <Style x:Key="FieldLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}" />
+                <Setter Property="Margin" Value="0,0,0,4" />
+            </Style>
+
+            <!-- Switch Style -->
+            <Style x:Key="ModernSwitch" TargetType="Switch">
+                <Setter Property="OnColor" Value="{AppThemeBinding Light=#28A745, Dark=#34C759}" />
+                <Setter Property="ThumbColor" Value="White" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <!-- Save Button -->
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Save" />
+        <ToolbarItem Text="💾 Save"
+                     Command="{Binding SaveCommand}"
+                     Order="Primary" />
     </ContentPage.ToolbarItems>
-    <StackLayout Padding="14">
-        <Label Text="Title" />
-        <Entry Text="{Binding Item.Title}" />
-        <Label Text="Due" />
-        <DatePicker Date="{Binding Item.Due}" />
-        <StackLayout Orientation="Horizontal">
-            <Switch IsToggled="{Binding Item.Completed}" />
-            <Label Text="Completed" />
+
+    <ScrollView BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#000000}">
+        <StackLayout Spacing="0">
+
+            <!-- Header Section -->
+            <StackLayout Padding="20,30,20,20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}">
+                <Label Text="Task Details"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}"
+                       HorizontalOptions="Center" />
+                <Label x:Name="SubtitleLabel"
+                       Text="Create or edit your task"
+                       FontSize="16"
+                       TextColor="{AppThemeBinding Light=#6C757D, Dark=#8E8E93}"
+                       HorizontalOptions="Center"
+                       Margin="0,8,0,0" />
+            </StackLayout>
+
+            <!-- Task Title Section -->
+            <Frame Style="{StaticResource InputCard}">
+                <StackLayout Spacing="8">
+                    <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Label Text="📝" FontSize="20" VerticalOptions="Center" />
+                        <Label Text="Task Title" Style="{StaticResource FieldLabel}" VerticalOptions="Center" />
+                    </StackLayout>
+                    <Entry x:Name="TitleEntry"
+                           Style="{StaticResource ModernEntry}"
+                           Text="{Binding Item.Title}"
+                           Placeholder="Enter your task title..." />
+                </StackLayout>
+            </Frame>
+
+            <!-- Due Date Section -->
+            <Frame Style="{StaticResource InputCard}">
+                <StackLayout Spacing="8">
+                    <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Label Text="📅" FontSize="20" VerticalOptions="Center" />
+                        <Label Text="Due Date" Style="{StaticResource FieldLabel}" VerticalOptions="Center" />
+                    </StackLayout>
+                    <DatePicker Style="{StaticResource ModernDatePicker}"
+                                Date="{Binding Item.Due}" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Status Section -->
+            <Frame Style="{StaticResource InputCard}">
+                <StackLayout Spacing="12">
+                    <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Label Text="✅" FontSize="20" VerticalOptions="Center" />
+                        <Label Text="Task Status" Style="{StaticResource FieldLabel}" VerticalOptions="Center" />
+                    </StackLayout>
+
+                    <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2C2C2E}"
+                           BorderColor="Transparent"
+                           CornerRadius="12"
+                           Padding="16,12"
+                           Margin="0">
+                        <StackLayout Orientation="Horizontal" Spacing="16">
+                            <Switch x:Name="CompletedSwitch"
+                                    Style="{StaticResource ModernSwitch}"
+                                    IsToggled="{Binding Item.Completed}" />
+                            <StackLayout VerticalOptions="Center" Spacing="2">
+                                <Label x:Name="StatusLabel"
+                                       Text="Mark as completed"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}" />
+                                <Label Text="Toggle when task is finished"
+                                       FontSize="14"
+                                       TextColor="{AppThemeBinding Light=#6C757D, Dark=#8E8E93}" />
+                            </StackLayout>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </Frame>
+
+            <!-- Task Preview Section -->
+            <Frame Style="{StaticResource InputCard}" x:Name="PreviewFrame">
+                <StackLayout Spacing="12">
+                    <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Label Text="👀" FontSize="20" VerticalOptions="Center" />
+                        <Label Text="Preview" Style="{StaticResource FieldLabel}" VerticalOptions="Center" />
+                    </StackLayout>
+
+                    <Frame BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A8A}"
+                           BorderColor="Transparent"
+                           CornerRadius="12"
+                           Padding="16"
+                           Margin="0">
+                        <StackLayout Spacing="8">
+                            <Label x:Name="PreviewTitle"
+                                   Text="{Binding Item.Title, StringFormat='📋 {0}'}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                            <Label Text="{Binding Item.Due, StringFormat='📅 Due: {0:MMM dd, yyyy}'}"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                            <Label x:Name="PreviewStatus"
+                                   Text="✅ Completed"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#2E7D32, Dark=#4CAF50}"
+                                   IsVisible="{Binding Item.Completed}" />
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </Frame>
+
+            <!-- Action Buttons -->
+            <StackLayout Orientation="Horizontal" Spacing="16" Margin="20,20,20,40">
+                <Button Text="{Binding SaveButtonText}"
+                        BackgroundColor="{AppThemeBinding Light=#007BFF, Dark=#0A84FF}"
+                        TextColor="White"
+                        CornerRadius="25"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        Command="{Binding SaveCommand}"
+                        HorizontalOptions="FillAndExpand" />
+
+                <Button Text="🗑️ Delete"
+                        BackgroundColor="{AppThemeBinding Light=#DC3545, Dark=#FF453A}"
+                        TextColor="White"
+                        CornerRadius="25"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        Command="{Binding DeleteCommand}"
+                        HorizontalOptions="FillAndExpand"
+                        IsVisible="{Binding IsExistingItem}" />
+            </StackLayout>
+
+            <!-- Bottom Spacing -->
+            <BoxView HeightRequest="20" Color="Transparent" />
         </StackLayout>
-    </StackLayout>
+    </ScrollView>
 </ContentPage>

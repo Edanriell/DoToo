@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -6,73 +6,185 @@
              xmlns:converters="clr-namespace:DoToo.Converters"
              x:Class="DoToo.Views.MainView"
              x:DataType="viewModels:MainViewModel"
-             Title="Do Too!">
+             Title="🚀 DoToo - Get Things Done!"
+             BackgroundColor="{AppThemeBinding Light=#FAFBFC, Dark=#0D1117}">
+
     <ContentPage.Resources>
         <ResourceDictionary>
-            <converters:StatusColorConverter
-                x:Key="statusColorConverter" />
-            <converters:FilterTextConverter
-                x:Key="filterTextConverter" />
+            <converters:StatusColorConverter x:Key="statusColorConverter" />
+            <converters:FilterTextConverter x:Key="filterTextConverter" />
+
+            <!-- Card -->
+            <Style x:Key="TaskCard" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}" />
+                <Setter Property="BorderColor" Value="Transparent" />
+                <Setter Property="CornerRadius" Value="16" />
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="Margin" Value="16,8" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <!-- Filter Button -->
+            <Style x:Key="ModernFilterButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A8A}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="Margin" Value="16,16,16,8" />
+                <Setter Property="BorderWidth" Value="2" />
+                <Setter Property="BorderColor" Value="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
+
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding
-AddItemAsyncCommand}" />
+        <ToolbarItem Text="✨ New Task"
+                     Command="{Binding AddItemCommand}"
+                     Order="Primary"
+                     Priority="0" />
     </ContentPage.ToolbarItems>
-    <Grid>
+
+    <Grid BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#000000}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Style="{DynamicResource FilterButton}"
-                Text="{Binding ShowAll,Converter={StaticResource
-filterTextConverter}, StringFormat='Filter: {0}'}"
-                BackgroundColor="{DynamicResource ActiveColor}"
-                TextColor="Black"
-                Command="{Binding ToggleFilterAsyncCommand}">
+
+        <!-- Header Section -->
+        <StackLayout Grid.Row="0" Padding="20,20,20,10" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}">
+            <Label Text="My Tasks"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}"
+                   HorizontalOptions="Start" />
+            <Label Text="{Binding Items.Count, StringFormat='You have {0} tasks'}"
+                   FontSize="16"
+                   TextColor="{AppThemeBinding Light=#6C757D, Dark=#8E8E93}"
+                   Margin="0,5,0,0" />
+        </StackLayout>
+
+        <!-- Filter Button -->
+        <Button Grid.Row="1"
+                Style="{StaticResource ModernFilterButton}"
+                Text="{Binding ShowAll, Converter={StaticResource filterTextConverter}, StringFormat='📋 Filter: {0}'}"
+                Command="{Binding ToggleFilterCommand}">
             <Button.Triggers>
-                <DataTrigger TargetType="Button" Binding="{Binding ShowAll}"
-                             Value="True">
-                    <Setter Property="BackgroundColor" Value="{DynamicResource
-CompletedColor}" />
-                    <Setter Property="TextColor" Value="White" />
+                <DataTrigger TargetType="Button" Binding="{Binding ShowAll}" Value="True">
+                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E8F5E8, Dark=#1B5E20}" />
+                    <Setter Property="TextColor" Value="{AppThemeBinding Light=#2E7D32, Dark=#4CAF50}" />
+                    <Setter Property="BorderColor" Value="{AppThemeBinding Light=#2E7D32, Dark=#4CAF50}" />
                 </DataTrigger>
             </Button.Triggers>
         </Button>
-        <ListView x:Name="ItemsListView" Grid.Row="1"
-                  RowHeight="70" ItemsSource="{Binding Items}"
-                  SelectedItem="{Binding SelectedItem}">
-            <ListView.ItemTemplate>
+
+        <!-- Task List -->
+        <CollectionView x:Name="TasksCollectionView"
+                        Grid.Row="2"
+                        ItemsSource="{Binding Items}"
+
+                        SelectionMode="Single"
+
+                        SelectedItem="{Binding SelectedItem}"
+
+                        BackgroundColor="Transparent">
+
+            <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:TodoItemViewModel">
-                    <ViewCell>
-                        <ViewCell.ContextActions>
-                            <MenuItem Text="{Binding StatusText}" Command="{Binding
-ToggleCompletedCommand}" />
-                        </ViewCell.ContextActions>
-                        <Grid Padding="15,10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <BoxView Grid.RowSpan="2"
-                                     BackgroundColor="{Binding Item.Completed, Converter={StaticResource statusColorConverter}}" />
-                            <Label Grid.Column="1"
-                                   Text="{Binding Item.Title}" FontSize="Medium" />
-                            <Label Grid.Column="1" Grid.Row="1"
-                                   Text="{Binding Item.Due, StringFormat='{0:MMMM d, yyyy}'}" />
-                            <Label Grid.Column="1" Grid.Row="1"
-                                   HorizontalTextAlignment="End" Text="Completed"
-                                   IsVisible="{Binding Item.Completed}"
-                                   FontSize="Micro"
-                                   TextColor="{StaticResource CompletedColor}" />
-                        </Grid>
-                    </ViewCell>
+                    <Frame Style="{StaticResource TaskCard}">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="{Binding StatusText}"
+                                               BackgroundColor="{AppThemeBinding Light=#28A745, Dark=#34C759}"
+                                               Command="{Binding ToggleCompletedCommand}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Grid Padding="20,16" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Status Indicator -->
+                                <BoxView Grid.RowSpan="2"
+                                         CornerRadius="3"
+                                         Color="{Binding Item.Completed, Converter={StaticResource statusColorConverter}}" />
+
+                                <!-- Task Title -->
+                                <Label Grid.Column="1"
+                                       Grid.Row="0"
+                                       Padding="16,0,0,0"
+                                       Text="{Binding Item.Title}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#2C3E50, Dark=#FFFFFF}"
+                                       LineBreakMode="TailTruncation" />
+
+                                <!-- Date with Icon -->
+                                <StackLayout Grid.Column="1"
+                                             Grid.Row="1"
+                                             Orientation="Horizontal"
+                                             Padding="16,0,0,0">
+                                    <Label Text="📅" FontSize="14" />
+                                    <Label Text="{Binding Item.Due, StringFormat='{0:MMM dd, yyyy}'}"
+                                           FontSize="14"
+                                           TextColor="{AppThemeBinding Light=#6C757D, Dark=#8E8E93}"
+                                           VerticalOptions="Center" />
+                                </StackLayout>
+
+                                <!-- Status Badge -->
+                                <Frame Grid.Column="2"
+                                       Grid.RowSpan="2"
+                                       IsVisible="{Binding Item.Completed}"
+                                       BackgroundColor="{AppThemeBinding Light=#D4EDDA, Dark=#1B5E20}"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="12,6"
+                                       VerticalOptions="Center">
+                                    <Label Text="✓ Done"
+                                           FontSize="12"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#155724, Dark=#4CAF50}"
+                                           HorizontalOptions="Center" />
+                                </Frame>
+
+                            </Grid>
+                        </SwipeView>
+                    </Frame>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </CollectionView.ItemTemplate>
+
+            <!-- Empty State -->
+            <CollectionView.EmptyView>
+                <Label FontSize="18"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       LineBreakMode="WordWrap"
+                       Padding="40">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="📋&#x0a;&#x0a;" FontSize="48" />
+                            <Span Text="Ready to get organized?&#x0a;"
+                                  FontSize="22"
+                                  FontAttributes="Bold" />
+                            <Span Text="&#x0a;No tasks yet - tap the ➕ button to add your first task!"
+                                  FontSize="16"
+                                  TextColor="Gray" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
     </Grid>
 </ContentPage>

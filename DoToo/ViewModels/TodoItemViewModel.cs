@@ -13,6 +13,7 @@ public partial class TodoItemViewModel : ViewModel
     public string StatusText => Item.Completed ? "Reactivate" : "Completed";
 
     public event EventHandler ItemStatusChanged;
+    public event EventHandler<TodoItem> ItemDeleteRequested;
 
     [RelayCommand]
     private void ToggleCompleted()

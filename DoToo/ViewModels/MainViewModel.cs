@@ -18,22 +18,17 @@ public partial class MainViewModel : ViewModel
 
     public MainViewModel(ITodoItemRepository repository, IServiceProvider services)
     {
-        repository.OnItemAdded += (sender, item) =>
-            items.Add(CreateTodoItemViewModel(item));
-
-        repository.OnItemUpdated += (sender, item) =>
-            Task.Run(async () => await LoadDataAsync());
-
         this.repository = repository;
+        repository.OnItemAdded += (sender, item) => Items.Add(CreateTodoItemViewModel(item));
+        repository.OnItemUpdated += (sender, item) => Task.Run(async () => await LoadDataAsync());
+        repository.OnItemDeleted += OnItemDeleted;
+
         this.services = services;
         Task.Run(async () => await LoadDataAsync());
     }
 
     [RelayCommand]
-    public async Task AddItemAsync() { await Navigation.PushAsync(services.GetRequiredService<ItemView>()); }
-
-    [RelayCommand]
-    private async Task ToggleFilterAsync()
+    public async Task ToggleFilterAsync()
     {
         ShowAll = !ShowAll;
         await LoadDataAsync();
@@ -42,14 +37,10 @@ public partial class MainViewModel : ViewModel
     private async Task LoadDataAsync()
     {
         var items = await repository.GetItemsAsync();
-
         if (!ShowAll) items = items.Where(x => x.Completed == false).ToList();
 
-        var itemViewModels = items.Select(i =>
-            CreateTodoItemViewModel(i));
-
-        Items = new ObservableCollection<TodoItemViewModel>
-            (itemViewModels);
+        var itemViewModels = items.Select(i => CreateTodoItemViewModel(i));
+        Items = new ObservableCollection<TodoItemViewModel>(itemViewModels);
     }
 
     private TodoItemViewModel CreateTodoItemViewModel(TodoItem item)
@@ -64,13 +55,18 @@ public partial class MainViewModel : ViewModel
         if (sender is TodoItemViewModel item)
         {
             if (!ShowAll && item.Item.Completed) Items.Remove(item);
+
             Task.Run(async () => await repository.UpdateItemAsync(item.Item));
         }
     }
 
+    [RelayCommand]
+    public async Task AddItemAsync() { await Navigation.PushAsync(services.GetRequiredService<ItemView>()); }
+
     partial void OnSelectedItemChanging(TodoItemViewModel value)
     {
-        if (value is not null) return;
+        if (value == null) return;
+
         MainThread.BeginInvokeOnMainThread(async () => { await NavigateToItemAsync(value); });
     }
 
@@ -78,10 +74,18 @@ public partial class MainViewModel : ViewModel
     {
         var itemView = services.GetRequiredService<ItemView>();
         var vm = itemView.BindingContext as ItemViewModel;
-
         vm.Item = item.Item;
         itemView.Title = "Edit todo item";
 
         await Navigation.PushAsync(itemView);
+    }
+
+    private void OnItemDeleted(object sender, TodoItem deletedItem)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            var itemToRemove = Items.FirstOrDefault(vm => vm.Item.Id == deletedItem.Id);
+            if (itemToRemove != null) Items.Remove(itemToRemove);
+        });
     }
 }

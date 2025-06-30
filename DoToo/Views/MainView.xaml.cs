@@ -1,4 +1,4 @@
-﻿using DoToo.ViewModels;
+using DoToo.ViewModels;
 
 namespace DoToo.Views;
 
@@ -9,7 +9,6 @@ public partial class MainView : ContentPage
         InitializeComponent();
         viewModel.Navigation = Navigation;
         BindingContext = viewModel;
-
-        ItemsListView.ItemSelected += (s, e) => ItemsListView.SelectedItem = null;
+        // ItemsListView.ItemSelected += (s, e) => ItemsListView.SelectedItem = null;
     }
 }
